@@ -12,7 +12,7 @@ import sys
 import os
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Models.mobilenet import MobileNetV2ForCIFAR8M
+from CNN import CNNModel
 from Config.config_model_fusion_v2 import Config
 from Log import Logger
 
@@ -48,11 +48,14 @@ class ModelProcess:
         self._width_transform=self._config1.hyperparameters["width_transform"]
         self._height_transform=self._config1.hyperparameters["height_transform"]
         self._drop_out=self._config1.hyperparameters["drop_out"]
+        self._conv_layers_arch=self._config1.hyperparameters["conv_Arch"]
+        self._fc__Arch=self._config1.hyperparameters["fc__Arch"]
         
         
         # set parameters
         self._num_classes=self._config1.model_parameters["num_classes"]
         self._device=self._config1.model_parameters["device"]
+        self._input_chanels=self._config1.model_parameters["input_chanels"]
         self._results = pd.DataFrame(columns=["True label"])
         self._orginal_labels=[[0,10,20,30,40],[1,11,21,31,41],[2,12,22,32,42]]
 
@@ -162,13 +165,13 @@ class ModelProcess:
         
          # Initialize model
         self._log.log("Initializing the model...")
-        model=MobileNetV2ForCIFAR8M(self._num_classes,self._height_transform,self._width_transform,self._drop_out)  
+        model = CNNModel(self._input_chanels,self._num_classes,self._conv_layers_arch,self._fc__Arch,self._device,0,self._drop_out)
         
         for id,path in enumerate(self._models_weights_path):
         
             model.load_state_dict(torch.load(path), strict=False)
             model.eval()
-            accuracy, probabilities, pr_label, tr_label =self.get_predictions_and_probabilities(model, self._orginal_labels[id],self._dataloader, device='cpu')
+            accuracy, probabilities, pr_label, tr_label =self.get_predictions_and_probabilities(model, self._orginal_labels[id],self._dataloader, device=self._device)
             if id==0:
                 self._results["True label"]=tr_label
                 
@@ -246,5 +249,5 @@ class ModelProcess:
             
 model=ModelProcess()
 model.models_output_colector()
-model.get_final_estimation()
-#model.get_final_estimation_bymax()
+#model.get_final_estimation()
+model.get_final_estimation_bymax()

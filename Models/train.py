@@ -14,7 +14,7 @@ class Train:
         self._log=log
         
     def train_model(self):
-        self._model.to(self._device)
+        self._model.to(torch.float32).to(self._device)
         tr_los=[]
         tr_ac=[]
         val_los=[]

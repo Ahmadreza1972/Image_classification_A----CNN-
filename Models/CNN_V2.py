@@ -8,7 +8,7 @@ from test import Test
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Models.mobilenet import MobileNetV2ForCIFAR8M
+from CNN import CNNModel
 from Config.config_model2 import Config
 from Log import Logger
 
@@ -34,11 +34,15 @@ class ModelProcess:
         self._width_transform=self._config1.hyperparameters["width_transform"]
         self._height_transform=self._config1.hyperparameters["height_transform"]
         self._drop_out=self._config1.hyperparameters["drop_out"]
+        self._conv_layers_arch=self._config1.hyperparameters["conv_Arch"]
+        self._fc__Arch=self._config1.hyperparameters["fc__Arch"]
         
         
         # set parameters
         self._num_classes=self._config1.model_parameters["num_classes"]
         self._device=self._config1.model_parameters["device"]
+        self._input_chanels=self._config1.model_parameters["input_chanels"]
+
 
     def save_result(self,model,tr_ac,val_ac,tr_los,val_los):
         
@@ -75,7 +79,7 @@ class ModelProcess:
 
         # Initialize model
         self._log.log("Initializing the model...")
-        model=MobileNetV2ForCIFAR8M(self._num_classes,self._height_transform,self._width_transform,self._drop_out)        
+        model = CNNModel(self._input_chanels,self._num_classes,self._conv_layers_arch,self._fc__Arch,self._device,0,self._drop_out)
         trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         self._log.log(f"Model initialized with {trainable_params:,} trainable parameters.")
 
