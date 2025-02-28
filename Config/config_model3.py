@@ -29,7 +29,7 @@ class Config:
         self._valdata_ratio = 0.05
         self._width_transform=32
         self._height_transform=32
-        self._dropout=0 
+        self._dropout=0.18 
         self._conv_Arch = [
         {"out_channels": 64, "kernel_size": 3, "stride": 1, "padding": 1, "maxpool": 0},
         {"out_channels": 128, "kernel_size": 3, "stride": 1, "padding": 1, "maxpool": 2},
